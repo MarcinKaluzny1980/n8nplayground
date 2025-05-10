@@ -12,6 +12,7 @@ services:
     env: docker_image
     plan: starter
     region: frankfurt
+    startCommand: "n8n" 
     image:
       url: docker.io/n8nio/n8n:latest
     envVars:
