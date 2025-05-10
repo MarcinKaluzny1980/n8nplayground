@@ -1,0 +1,65 @@
+databases:
+  - name: n8n-postgres
+    plan: starter
+    region: frankfurt
+    databaseName: n8n
+    user: n8n
+    ipAllowList: [] # Pozwala tylko usługom Render łączyć się z bazą
+
+services:
+  - type: web
+    name: n8n
+    env: docker
+    plan: starter
+    region: frankfurt
+    image:
+      name: n8nio/n8n
+      tag: latest
+    envVars:
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: yourUsername
+      - key: N8N_BASIC_AUTH_PASSWORD
+        value: yourPassword
+      - key: N8N_HOST
+        value: 0.0.0.0
+      - key: N8N_PORT
+        value: "5678"
+      - key: WEBHOOK_URL
+        value: https://n8n.onrender.com/
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      - key: GENERIC_TIMEZONE
+        value: Europe/Warsaw
+
+      # Konfiguracja bazy danych Postgres
+      - key: DB_TYPE
+        value: postgres
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-postgres
+          property: host
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-postgres
+          property: port
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-postgres
+          property: database
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-postgres
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-postgres
+          property: password
+      - key: DB_POSTGRESDB_SCHEMA
+        value: public
+
+    disk:
+      name: n8n-data
+      mountPath: /home/node/.n8n
+      sizeGB: 5
